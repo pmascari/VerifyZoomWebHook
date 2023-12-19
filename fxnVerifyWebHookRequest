@@ -1,0 +1,35 @@
+<!--- https://developers.zoom.us/docs/api/rest/webhook-reference/#verify-webhook-events --->
+
+<cffunction name="verifyZoomReq" output="no" hint="Verify the webhook event came from Zoom">
+	  <cfargument name="payload" required="Yes" hint="Payload object of the webhook POST">
+		
+		<cfset var ret = false>
+
+		<cftry>
+
+			<cfif isDefined("arguments.payload.content") AND isDefined("arguments.payload.headers") AND structKeyExists(arguments.payload.headers, "x-zm-signature") AND structKeyExists(arguments.payload.headers, "x-zm-request-timestamp")>
+
+				<!--- Construct required message string --->
+				<cfset message = "v0:" & arguments.payload.headers["x-zm-request-timestamp"] & ":" & arguments.payload.content>
+
+				<!--- Hash the message --->
+				<cfset hashForVerify = lcase(hmac(message,secretToken,"HMACSHA256"))>
+
+				<!--- Create the signature --->
+				<cfset hashForVerify = "v0=" & hashForVerify>
+
+				<!--- Compare the signature --->
+				<cfif compare(hashForVerify,arguments.payload.headers["x-zm-signature"]) IS 0>
+					<cfset ret = true>
+				</cfif>
+
+			<cfcatch type="any">
+
+				  <!--- Deal with error --->
+					
+			</cfcatch>
+		</cftry>
+
+		<cfreturn ret>
+
+</cffunction> 
