@@ -22,7 +22,7 @@
 				<cfif compare(hashForVerify,arguments.payload.headers["x-zm-signature"]) IS 0>
 					<cfset ret = true>
 				</cfif>
-
+			</cfif>
 			<cfcatch type="any">
 
 				  <!--- Deal with error --->
